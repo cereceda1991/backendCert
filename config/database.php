@@ -95,16 +95,16 @@ return [
 
         'mongodb' => [
             'driver' => 'mongodb',
-            'host' => env('MONGOHOST'),
-            'port' => env('MONGOPORT'),
-            'database' => env('MONGO_URL'),
-            'username' => env('MONGOUSER'),
-            'password' => env('MONGOPASSWORD'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', 27017),
+            'database' => env('DB_DATABASE'),
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
             'options' => [
-                'database' => 'admin', 
+                'database' => 'admin' // Esto es opcional, depende de tu configuración de MongoDB
             ],
         ],
-            
+        
 
     ],
 
