@@ -1,6 +1,0 @@
-[build]
-  builder = "laravel"
-  command = "php artisan install"
-
-[deploy]
-  command = "php artisan serve --port $PORT"
