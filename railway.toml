@@ -1,0 +1,8 @@
+# railway.toml
+
+[build]
+  builder = "laravel"
+  command = "php artisan install"
+
+[start]
+  command = "php artisan serve --port $PORT"
