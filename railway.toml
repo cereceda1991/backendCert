@@ -2,5 +2,5 @@
   builder = "laravel"
   command = "php artisan install"
 
-[start]
+[deploy]
   command = "php artisan serve --port $PORT"
