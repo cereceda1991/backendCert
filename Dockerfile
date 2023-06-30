@@ -16,11 +16,6 @@ RUN pecl install mongodb && docker-php-ext-enable mongodb
 # Copiar los archivos del proyecto al contenedor
 COPY . /var/www/html
 
-# Configurar el entorno
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN a2enmod rewrite
-
 # Instalar dependencias de Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer install 
