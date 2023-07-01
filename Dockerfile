@@ -23,8 +23,5 @@ RUN composer install
 # Establecer permisos adecuados
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Puerto expuesto por Apache
-EXPOSE 80
-
 # Comando de inicio del contenedor
 CMD ["apache2-foreground"]
