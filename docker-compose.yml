@@ -54,4 +54,7 @@ services:
       - VITE_PUSHER_SCHEME=${VITE_PUSHER_SCHEME}
       - VITE_PUSHER_APP_CLUSTER=${VITE_PUSHER_APP_CLUSTER}
       - PHP_MONGODB_VERSION=${PHP_MONGODB_VERSION}
-    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - .:/var/www

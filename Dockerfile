@@ -1,28 +1,43 @@
-# Imagen base de PHP
-FROM php:8.1-fpm
+# Usar la imagen base de PHP 8.1
+FROM php:8.1
 
-# Instalar extensiones de PHP necesarias
-RUN docker-php-ext-install pdo_mysql
+# Establecer el directorio de trabajo en /var/www
+WORKDIR /var/www
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=2.1.3
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libonig-dev \
+    libzip-dev \
+    zip \
+    unzip
+
+# Instalar extensiones de PHP requeridas por Laravel
+RUN docker-php-ext-install pdo_mysql mbstring zip
 
 # Instalar Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Establecer el directorio de trabajo
-WORKDIR /var/www/html
+# Copiar los archivos de la aplicación al contenedor
+COPY . .
 
-# Copiar archivos del proyecto
-COPY . /var/www/html
+# Copiar el archivo .env.example como .env
+RUN cp .env.example .env
+
+# Generar la clave de la aplicación
+RUN php artisan key:generate
 
 # Instalar dependencias de Composer
 RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --optimize-autoloader
 
 # Establecer permisos adecuados
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Exponer el puerto 9000 para PHP-FPM
-EXPOSE 9000
+# Ejecutar las migraciones y seeders si es necesario
+RUN php artisan migrate --seed
 
-# Comando de inicio para PHP-FPM
-CMD ["php-fpm"]
+# Exponer el puerto 80 del contenedor
+EXPOSE 80
+
+# Iniciar el servidor web de PHP
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
