@@ -1,27 +1,26 @@
+# Imagen base de PHP
 FROM php:8.1-fpm
 
-# Install required extensions
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    zip \
-    && docker-php-ext-install zip pdo pdo_mysql mongodb \
-    && pecl install mongodb \
-    && docker-php-ext-enable mongodb
+# Instalar extensiones de PHP necesarias
+RUN docker-php-ext-install pdo_mysql
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
+# Establecer el directorio de trabajo
 WORKDIR /var/www/html
 
-# Copy source code
+# Copiar archivos del proyecto
 COPY . /var/www/html
 
-# Install dependencies
-RUN composer install --no-dev
+# Instalar dependencias de Composer
+RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --optimize-autoloader
 
-# Expose port 8000
-EXPOSE 8000
+# Establecer permisos adecuados
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Start PHP-FPM server
+# Exponer el puerto 9000 para PHP-FPM
+EXPOSE 9000
+
+# Comando de inicio para PHP-FPM
 CMD ["php-fpm"]
