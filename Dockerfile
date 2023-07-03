@@ -27,14 +27,11 @@ RUN cp .env.example .env
 # Generar la clave de la aplicación
 RUN php artisan key:generate
 
-# Instalar dependencias de Composer
-RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --optimize-autoloader
-
 # Establecer permisos adecuados
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Ejecutar las migraciones y seeders si es necesario
-RUN php artisan migrate --seed
+# Instalar dependencias de Composer
+RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --optimize-autoloader
 
 # Exponer el puerto 80 del contenedor
 EXPOSE 80
