@@ -28,6 +28,12 @@ RUN composer install
 # Establecer permisos adecuados
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Copiar el archivo de configuración personalizado de Apache
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
+
+# Establecer el nombre de servidor global para Apache
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # Puerto expuesto por Apache
 EXPOSE 80
 
