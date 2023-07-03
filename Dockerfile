@@ -4,6 +4,8 @@ FROM php:8.1-fpm
 # Instalar extensiones de PHP necesarias
 RUN docker-php-ext-install pdo_mysql
 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=2.1.3
+
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
