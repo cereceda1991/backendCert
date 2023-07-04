@@ -16,16 +16,13 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-install pdo_mysql mbstring zip
 
 # Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Copiar los archivos de la aplicación al contenedor
 COPY . .
 
 # Copiar el archivo .env.example como .env
 RUN cp .env.example .env
-
-# Otorgar permisos
-RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Generar la clave de la aplicación
 RUN php artisan key:generate
