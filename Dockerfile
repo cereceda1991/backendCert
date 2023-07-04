@@ -7,6 +7,7 @@ WORKDIR /var/www
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     build-essential \
+    libssl-dev \
     libonig-dev \
     libzip-dev \
     zip \
@@ -14,6 +15,9 @@ RUN apt-get update && apt-get install -y \
 
 # Instalar extensiones de PHP requeridas por Laravel y Composer
 RUN docker-php-ext-install pdo_mysql mbstring zip
+
+# Habilitar la extensión OpenSSL para SSL
+RUN docker-php-ext-enable openssl
 
 # Instalar extensión de MongoDB para PHP
 RUN pecl install mongodb && \
