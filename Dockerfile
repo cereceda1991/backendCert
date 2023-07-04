@@ -24,6 +24,9 @@ COPY . .
 # Copiar el archivo .env.example como .env
 RUN cp .env.example .env
 
+# Otorgar permisos
+RUN chown -R www-data:www-data storage bootstrap/cache
+
 # Generar la clave de la aplicación
 RUN php artisan key:generate
 
