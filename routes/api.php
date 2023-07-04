@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CertificateController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\TemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1'], function () {
@@ -17,7 +18,11 @@ Route::group(['prefix' => 'v1'], function () {
 
     // Rutas protegidas por el middleware jwt.auth
     Route::group(['middleware' => 'jwt.auth'], function () {
+        // Rutas para usuarios
         Route::resource('users', UserController::class)->except(['create', 'edit', 'store']);
+        // Rutas para certificados
         Route::resource('certificates', CertificateController::class)->except(['create', 'edit']);
+        // Rutas para plantillas
+        Route::resource('templates', TemplateController::class)->except(['edit','create','destroy']);
     });
 });
