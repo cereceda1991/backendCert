@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
-# Instalar extensiones de PHP requeridas por Laravel
+# Instalar extensiones de PHP requeridas por Laravel y Composer
 RUN docker-php-ext-install pdo_mysql mbstring zip
 
 # Instalar Composer
@@ -31,7 +31,7 @@ RUN php artisan key:generate || true
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Instalar dependencias de Composer
-RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --optimize-autoloader
+RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --ignore-platform-reqs --optimize-autoloader
 
 # Exponer el puerto 80 del contenedor
 EXPOSE 80
