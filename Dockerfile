@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y \
 # Instalar extensiones de PHP requeridas por Laravel y Composer
 RUN docker-php-ext-install pdo_mysql mbstring zip
 
-# Habilitar la extensión OpenSSL para SSL
-RUN docker-php-ext-enable openssl
+# Instalar extensión de OpenSSL para PHP
+RUN apt-get install -y openssl
 
 # Instalar extensión de MongoDB para PHP
 RUN pecl install mongodb && \
