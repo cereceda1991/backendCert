@@ -15,6 +15,10 @@ RUN apt-get update && apt-get install -y \
 # Instalar extensiones de PHP requeridas por Laravel y Composer
 RUN docker-php-ext-install pdo_mysql mbstring zip
 
+# Instalar extensión de MongoDB para PHP
+RUN pecl install mongodb && \
+    docker-php-ext-enable mongodb
+
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
