@@ -24,8 +24,8 @@ COPY . .
 # Copiar el archivo .env.example como .env
 RUN cp .env.example .env
 
-# Generar la clave de la aplicación solo si no está configurada
-RUN if [ -z "$APP_KEY" ]; then php artisan key:generate; fi
+# Generar la clave de la aplicación
+RUN php artisan key:generate || true
 
 # Establecer permisos adecuados
 RUN chown -R www-data:www-data storage bootstrap/cache
