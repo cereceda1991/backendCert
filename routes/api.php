@@ -15,7 +15,7 @@ Route::group(['prefix' => 'v1'], function () {
     
     // Ruta de registro de usuarios sin protección del middleware
     Route::post('users', [UserController::class, 'store'])->name('users.store');
-
+    
     // Rutas protegidas por el middleware jwt.auth
     Route::group(['middleware' => 'jwt.auth'], function () {
         // Rutas para usuarios

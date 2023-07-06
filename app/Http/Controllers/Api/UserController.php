@@ -13,16 +13,29 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all();
-        return response()->json([
-            "result" => $users
-        ], Response::HTTP_OK);
+        $perPage = 50; // Número de usuarios por página
+        $users = User::paginate($perPage);
+    
+        $response = [
+            'status' => 'success',
+            'message' => 'Users found!',
+            'data' => [
+                'users' => $users->items(),
+                'currentPage' => $users->currentPage(),
+                'perPage' => $users->perPage(),
+                'totalPages' => $users->lastPage(),
+                'totalCount' => $users->total(),
+            ],
+        ];
+    
+        return response()->json($response, Response::HTTP_OK);
     }
-
+      
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return response()->json(['result' => $user], Response::HTTP_OK);
+        return response()->success($user , 'User found!');
+
     }
 
     public function store(Request $request)
@@ -33,55 +46,46 @@ class UserController extends Controller
             'password' => 'required|min:6',
             'address' => 'nullable',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
-
+    
         $user = new User;
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->address = 'default';
         $user->save();
+    
+        $token = JWTAuth::fromUser($user);
+    
+        return response()->success(['token' => $token,'user' => $user ], 'User successfully registered!');
 
-        return response()->json(['result' => $user], Response::HTTP_CREATED);
     }
-
+ 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'required|min:6',
-            'address' => 'nullable|string', 
-        ]);
-    
-        $user = User::findOrFail($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->address = $request->address; 
-        $user->save();
-    
-        return response()->json(['result' => $user], Response::HTTP_OK);
-    }
-    
-
+            $user = User::findOrFail($id);
+            $request->validate([
+                'name' => 'required',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'password' => 'required|min:6',
+                'address' => 'nullable|string',
+            ]);
+        
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = bcrypt($request->password);
+            $user->address = $request->address; 
+            $user->save();
+        
+            return response()->success($user,'User has been successfully updated');        
+    }    
+  
     public function destroy($id)
     {
         User::destroy($id);
         return response()->json(['message' => "Deleted"], Response::HTTP_OK);
-    }
-
-    public function authenticate(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-
-        if (! $token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return response()->json(['token' => $token], Response::HTTP_OK);
     }
 }

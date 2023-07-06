@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+
 class AuthController extends Controller
 {
     public function login(Request $request)
@@ -38,16 +39,16 @@ class AuthController extends Controller
         $user->makeHidden('password'); 
         $token = JWTAuth::fromUser($user);
 
-        return response()->json(['user' => $user, 'token' => $token], Response::HTTP_OK);
+        return response()->success(['token' => $token,'user' => $user ], 'Successful login!');
     }
-
+    
     public function logout(Request $request)
     {
         try {
             // Revocar el token de acceso del usuario actual
             JWTAuth::invalidate(JWTAuth::getToken());
-
-            return response()->json(['message' => 'Logout successful'], Response::HTTP_OK);
+            
+            return response()->success([], 'Logout successful');
         } catch (JWTException $e) {
             return response()->json(['error' => 'Failed to sign out'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

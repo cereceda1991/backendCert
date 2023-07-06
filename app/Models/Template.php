@@ -14,10 +14,14 @@ class Template extends Model
 
     protected $fillable = [
         'urlImg',
-        'name'
+        'publicId',
+        'name',
+        'status'
     ];
     protected $casts = [
         'urlImg' => 'string',
+        'publicId'=>'string',
         'name' => 'string',
+        'status' => 'boolean'
     ];
 }
