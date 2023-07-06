@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CertificateController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\TemplateController;
+use App\Http\Controllers\Api\LogoController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1'], function () {
@@ -24,5 +25,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::resource('certificates', CertificateController::class)->except(['create', 'edit']);
         // Rutas para plantillas
         Route::resource('templates', TemplateController::class)->except(['edit','create','destroy']);
+        // Rutas para logos        
+        Route::resource('logos', LogoController::class)->except(['edit','create','destroy']);
     });
 });

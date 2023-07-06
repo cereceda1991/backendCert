@@ -14,11 +14,24 @@ class TemplateController extends Controller
 {
     public function index()
     {
-        $templates = Template::all();
-        return response()->json([
-            "result" => $templates
-        ], Response::HTTP_OK);
+        $perPage = 50; // Número de templates por página
+        $templates = Template::paginate($perPage);
+    
+        $response = [
+            'status' => 'success',
+            'message' => 'Templates found!',
+            'data' => [
+                'templates' => $templates->items(),
+                'currentPage' => $templates->currentPage(),
+                'perPage' => $templates->perPage(),
+                'totalPages' => $templates->lastPage(),
+                'totalCount' => $templates->total(),
+            ],
+        ];
+    
+        return response()->json($response, Response::HTTP_OK);
     }
+    
 
     public function show($id)
     {
