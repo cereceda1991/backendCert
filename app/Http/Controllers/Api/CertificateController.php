@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
+use App\Models\Logo;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,43 +21,44 @@ class CertificateController extends Controller
     public function show($id)
     {
         $certificate = Certificate::findOrFail($id);
-        return response()->json(['result' => $certificate], Response::HTTP_OK);
+        return response()->success($certificate, 'certificate found!');
     }
 
     public function store(Request $request)
     {
         $certificate = new Certificate();
 
-        $certificate->subjectName = $request->subjectName;
         $certificate->certificateType = $request->certificateType;
-        $certificate->issuingAuthority = $request->issuingAuthority;
-        $certificate->expiryDate = $request->expiryDate;
-        $certificate->publicKey = $request->publicKey;
-        $certificate->president = $request->president;
-        $certificate->academicDirector = $request->academicDirector;
+        $certificate->id_user = $request->id_user;
+        $certificate->id_template = $request->id_template;
+        $certificate->authority1 = $request->authority1;
+        $certificate->authority2 = $request->authority2;
+        $certificate->career_type = $request->career_type;
         $certificate->certificateContent = $request->certificateContent;
+        $certificate->urlLogo = $request->urlLogo;
 
         $certificate->save();
 
-        return response()->json(['result' => $certificate], Response::HTTP_CREATED);
+        return response()->success($certificate, 'Data saved!');
     }
 
     public function update(Request $request, $id)
     {
         $certificate = Certificate::findOrFail($id);
 
-        $certificate->subjectName = $request->subjectName;
         $certificate->certificateType = $request->certificateType;
-        $certificate->issuingAuthority = $request->issuingAuthority;
-        $certificate->expiryDate = $request->expiryDate;
+        $certificate->id_user = $request->id_user; 
+        $certificate->id_template = $request->id_template;
         $certificate->publicKey = $request->publicKey;
-        $certificate->president = $request->president;
-        $certificate->academicDirector = $request->academicDirector;
+        $certificate->authority1 = $request->authority1;
+        $certificate->authority2 = $request->authority2;
+        $certificate->career_type = $request->career_type;
         $certificate->certificateContent = $request->certificateContent;
+        $certificate->urlLogo = $request->urlLogo;
 
         $certificate->save();
 
-        return response()->json(['result' => $certificate], Response::HTTP_OK);
+        return response()->success($certificate, 'Data updated!');
     }
 
     public function destroy($id)
