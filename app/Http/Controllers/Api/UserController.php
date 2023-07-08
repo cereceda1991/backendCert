@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -33,11 +34,15 @@ class UserController extends Controller
       
     public function show($id)
     {
-        $user = User::findOrFail($id);
-        return response()->success($user , 'User found!');
-
+        $user = User::find($id);
+    
+        if (!$user) {
+            return response()->json(['message' => 'User not found.', 'type' => 'error'], 404);
+        }
+    
+        return response()->success($user, 'User found!');
     }
-
+    
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -66,23 +71,36 @@ class UserController extends Controller
  
     public function update(Request $request, $id)
     {
+        try {
             $user = User::findOrFail($id);
-            $request->validate([
+    
+            $validator = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => 'required|email|unique:users,email,' . $id,
+                'email' => ['required', 'email', Rule::unique('users')->ignore($user)],
                 'password' => 'required|min:6',
                 'address' => 'nullable|string',
             ]);
-        
+    
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            }
+    
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->password = bcrypt($request->password);
-            $user->address = $request->address; 
+            $user->address = $request->address;
+    
+            if ($request->has('password')) {
+                $user->password = bcrypt($request->password);
+            }
+    
             $user->save();
-        
-            return response()->success($user,'User has been successfully updated');        
-    }    
-  
+    
+            return response()->success($user, 'User has been successfully updated');
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'type' => 'error'], 500);
+        }
+    }                   
+     
     public function destroy($id)
     {
         User::destroy($id);

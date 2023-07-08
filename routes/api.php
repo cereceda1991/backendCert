@@ -16,7 +16,6 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle']);
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
 
-
     // Rutas de login y logout
     Route::post('auth/login', [AuthController::class, 'login'])->name('login');
     Route::post('auth/logout', [AuthController::class, 'logout'])->name('logout')->middleware('jwt.auth');

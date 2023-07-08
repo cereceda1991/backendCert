@@ -30,15 +30,12 @@ class TemplateController extends Controller
         ];
     
         return response()->json($response, Response::HTTP_OK);
-    }
-    
+    }    
 
     public function show($id)
     {
         try {
-            //code...
         } catch (\Throwable $th) {
-            //throw $th;
         }
         $template = Template::findOrFail($id);
         return response()->success($template, 'template found!');

@@ -21,26 +21,22 @@ class GoogleAuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
 
-            // Busca el usuario en la base de datos por el correo electrónico devuelto por Google
             $user = User::where('email', $googleUser->email)->first();
 
             if (!$user) {
-                // Si el usuario no existe, créalo
                 $user = User::create([
                     'name' => $googleUser->name,
                     'email' => $googleUser->email,
                 ]);
             }
 
-            // Genera un token JWT para el usuario
             $token = JWTAuth::fromUser($user);
 
-            return response()->success(['token' => $token,'user' => $user ], 'User successfully registered!');
+            return response()->success(['token' => $token,'user' => $user ], 'Access granted!');
 
        } catch (\Exception $e) {
-            // Manejo de errores en caso de que falle la autenticación con Google
             return response()->json([
-                'error' => 'Error al autenticar con Google. Por favor, inténtalo de nuevo.',
+                'error' => 'Failed to authenticate with Google. Please try again.',
             ], 500);
         }
     }

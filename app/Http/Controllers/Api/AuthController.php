@@ -15,7 +15,6 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Validar los datos de entrada
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -45,7 +44,6 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            // Revocar el token de acceso del usuario actual
             JWTAuth::invalidate(JWTAuth::getToken());
             
             return response()->success([], 'Logout successful');
