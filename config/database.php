@@ -98,6 +98,12 @@ return [
             'dsn' => env('DB_URI', 'mongodb+srv://username:password@<atlas-cluster-uri>/myappdb?retryWrites=true&w=majority'),
             'database' => 'certifime',
     ],
+    'failed' => [
+        'driver' => 'mongodb',
+        // You can also specify your jobs specific database created on config/database.php
+        'database' => 'certifime',
+        'table' => 'failed_jobs',
+    ],
     ],
 
     /*

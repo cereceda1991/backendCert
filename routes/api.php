@@ -1,14 +1,15 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CertificateController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\TemplateController;
-use App\Http\Controllers\Api\LogoController;
-use App\Http\Controllers\Api\StudentController;
-use App\Http\Controllers\Api\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FirmController;
+use App\Http\Controllers\Api\LogoController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\TemplateController;
+use App\Http\Controllers\Api\GoogleAuthController;
+use App\Http\Controllers\Api\CertificateController;
 
 Route::group(['prefix' => 'v1'], function () {
 
@@ -25,6 +26,9 @@ Route::group(['prefix' => 'v1'], function () {
     
     // Rutas protegidas por el middleware jwt.auth
     Route::group(['middleware' => 'jwt.auth'], function () {
+        Route::get('certificates/send/{id}',[CertificateController::class,'send']);
+        Route::get('certificates/sendall/{id}',[CertificateController::class,'sendAll']);
+        Route::get('certificates/esquema/{id}',[CertificateController::class,'esquema']);
         // Rutas para usuarios
         Route::resource('users', UserController::class)->except(['create', 'edit', 'store']);
         // Rutas para certificados
@@ -33,7 +37,13 @@ Route::group(['prefix' => 'v1'], function () {
         Route::resource('templates', TemplateController::class)->except(['edit','create','destroy']);
         // Rutas para logos        
         Route::resource('logos', LogoController::class)->except(['edit','create','destroy']);
+        // Rutas para Firmas        
+        Route::resource('firms', FirmController::class)->except(['edit','create','destroy']);
         // Rutas para estudiantes        
         Route::resource('students', StudentController::class)->except(['create','edit']);
+        // Ruta para enviar token para restaurar la contraseña
+        Route::post('sendPasswordResetLink', 'App\Http\Controllers\Api\PasswordResetRequestController@sendEmail');
+        //Guardar nueva contraseña
+        Route::post('resetPassword', 'App\Http\Controllers\Api\ChangePasswordController@passwordResetProcess');
     });
 });

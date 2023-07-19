@@ -183,6 +183,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider::class,
+
         /*
          * Package Service Providers...
          */
@@ -196,7 +197,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\ResponseMacroServiceProvider::class,
-
+        Jenssegers\Mongodb\MongodbQueueServiceProvider::class,
 
     ],
 

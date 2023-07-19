@@ -13,27 +13,57 @@ class Certificate extends Model
     protected $collection = 'certificates';
 
     protected $fillable = [
-        '_id'.
-        'certificateType',
-        'id_user',
         'id_template',
-        'authority1',
-        'authority2',
-        'career_type',
-        'certificateContent',
-        'urlLogo'
+        'id_logo',
+        'id_student',
+        'id_cd',
+        'public_key'
     ];
 
     protected $casts = [
-        '_id' => 'string',
-        'certificateType' => 'string',
-        'id_user' => 'string',
-        'id_template' => 'string',
-        'authority1' => 'string',
-        'authority2' => 'string',
-        'career_type' => 'string',
-        'certificateContent' => 'string',
-        'urlLogo' => 'string'
+        'id_template'  => 'string',
+        'id_logo'  => 'string',
+        'id_student'  => 'string',
+        'id_cd'  => 'string',
+        'public_key' => 'string'
     ];
 
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'id_student');
+    }
+
+    public function certificateData()
+    {
+        return $this->belongsTo(CertificateData::class, 'id_cd');
+    }
+    public function logo()
+    {
+        return $this->belongsTo(Logo::class, 'id_logo');
+    }
+    public function template()
+    {
+        return $this->belongsTo(Template::class, 'id_template');
+    }
+    protected $hidden = [
+        'id_student',
+        'id_cd',
+        'id_logo',
+        'id_template'
+    ];
+     public function toArray()
+    {
+        $array = parent::toArray();
+
+        if ($this->relationLoaded('student')) {
+            $array['student'] = $this->student;
+        }
+        if ($this->relationLoaded('logo')) {
+            $array['logo'] = $this->logo;
+        }
+        if ($this->relationLoaded('template')) {
+            $array['template'] = $this->template;
+        }
+        return $array;
+    } 
 }
