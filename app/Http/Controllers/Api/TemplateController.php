@@ -2,48 +2,65 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Template;
+use App\Models\ThumbnailTemplate;
 use Illuminate\Http\Request;
-
 use Symfony\Component\HttpFoundation\Response;
 use Cloudinary;
 
 class TemplateController extends Controller
-{
+{   
+
     public function index()
     {
-        $perPage = 50; // Número de templates por página
-        $templates = Template::paginate($perPage);
-    
-        $response = [
-            'status' => 'success',
-            'message' => 'Templates found!',
-            'data' => [
-                'templates' => $templates->items(),
-                'currentPage' => $templates->currentPage(),
-                'perPage' => $templates->perPage(),
-                'totalPages' => $templates->lastPage(),
-                'totalCount' => $templates->total(),
-            ],
-        ];
-    
-        return response()->json($response, Response::HTTP_OK);
-    }    
+        try {
+            $templates = Template::with('thumbnail')->get();
+
+            $response = [
+                'status' => 'success',
+                'message' => 'Templates found!',
+                'data' => [
+                    'templates' => $templates,
+                ],
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function show($id)
     {
         try {
+            $template = Template::with('thumbnail')->findOrFail($id);
+    
+            $response = [
+                'status' => 'success',
+                'message' => 'Template found!',
+                'data' => [
+                    'template' => $template,
+                ],
+            ];
+    
+            return response()->json($response, Response::HTTP_OK);
         } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $template = Template::findOrFail($id);
-        return response()->success($template, 'template found!');
-    }
-
+    }    
+    
     public function store(Request $request)
     {
         $uploadedFile = $request->file('image');
+        $uploadedThumbnail = $request->file('thumbnail'); 
+
         try {
             $image = Cloudinary::upload($uploadedFile->getRealPath());
             $template = new Template;
@@ -52,41 +69,29 @@ class TemplateController extends Controller
             $template->name = $request->name;
             $template->status = true;
             $template->save();
-    
-            return response()->success($template, 'Data saved!');
-        } catch (\Throwable $th) {
-            return response()->error($th->getMessage());
-        }
 
+            if ($uploadedThumbnail) {
+                $thumbnailImage = Cloudinary::upload($uploadedThumbnail->getRealPath());
+                $thumbnailTemplate = new ThumbnailTemplate;
+                $thumbnailTemplate->urlImg = $thumbnailImage->getSecurePath();
+                $thumbnailTemplate->publicId = $thumbnailImage->getPublicId();
+                $thumbnailTemplate->template_id = $template->_id; 
+                $thumbnailTemplate->save();
+            }
+
+            $template->thumbnail = $thumbnailTemplate ?? null;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data saved!',
+                'data' => $template, 
+            ], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public function update(Request $request,$id)
-    {
-        $uploadedFile = $request->file('image');
-         try { 
-             $template = Template::findOrFail($id); 
-             if($uploadedFile){
-                $destroy = Cloudinary::destroy($template->publicId);
-                $image = Cloudinary::upload($uploadedFile->getRealPath());
-                $template->urlImg = $image->getSecurePath();
-                $template->publicId = $image->getPublicId();      
-            }            
-            $template->fill($request->only(['name', 'status']));
-            $template->save();
-            return response()->success($template, 'Data updated!');
-         } catch (\Throwable $th) {
-            return response()->error($th->getMessage());
-        } 
-    }
-    
-/*     public function destroy(Request $request)
-    {
-        try {
-            $template = Template::findOneAndDelete($request->id); 
-            return response()->json(['result' => $template], Response::HTTP_CREATED);
-        } catch (\Throwable $th) {
-            return response()->error($th->getMessage());
-        }
-       
-    } */
 }

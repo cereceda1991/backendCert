@@ -4,34 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Model;
+use MongoDB\BSON\ObjectId;
 
-class Template extends Model
+class ThumbnailTemplate extends Model
 {
     use HasFactory;
 
     protected $connection = 'mongodb';
-    protected $collection = 'templates';
+    protected $collection = 'thumbnail_templates';
 
     protected $fillable = [
         'urlImg',
         'publicId',
-        'name',
-        'status'
+        'template_id',
     ];
 
     protected $casts = [
         'urlImg' => 'string',
         'publicId' => 'string',
-        'name' => 'string',
-        'status' => 'boolean'
     ];
 
-    public function thumbnail()
+    // Utilizar el tipo de dato ObjectId para template_id
+    protected $attributes = [
+        'template_id' => null,
+    ];
+
+    public function template()
     {
-        return $this->hasOne(ThumbnailTemplate::class, 'template_id');
+        return $this->belongsTo(Template::class, 'template_id', '_id');
     }
 }
-
-
-
 
