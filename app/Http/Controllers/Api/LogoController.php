@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Logo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 use Symfony\Component\HttpFoundation\Response;
 use Cloudinary;
@@ -45,17 +46,25 @@ class LogoController extends Controller
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'image' => 'required|image',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([$validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+    
         $uploadedFile = $request->file('image');
         try {
             $image = Cloudinary::upload($uploadedFile->getRealPath());
             $logo = new Logo;
             $logo->urlImg = $image->getSecurePath();
             $logo->publicId = $image->getPublicId();
-            $logo->name = $request->name;
             $logo->status = true;
             $logo->save();
-
-        return response()->success($logo, 'The logo has been added successfully!')->header('Content-Type', 'application/json')->setStatusCode(Response::HTTP_CREATED);
+    
+         
+            return response()->success([$logo ], 'The logo has been added successfully!');
 
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -73,7 +82,7 @@ class LogoController extends Controller
                 $logo->urlImg = $image->getSecurePath();
                 $logo->publicId = $image->getPublicId();      
             }            
-            $logo->fill($request->only(['name', 'status']));
+            $logo->fill($request->only(['status']));
             $logo->save();
             return response()->success($logo, 'Data updated!');
          } catch (\Throwable $th) {
@@ -81,16 +90,4 @@ class LogoController extends Controller
         } 
     }      
     
-    // public function destroy($id)
-    // {
-    //     try {
-    //         $logo = Logo::findOrFail($id);
-    //         $destroy = Cloudinary::destroy($logo->publicId);
-    //         $logo->delete();
-
-    //         return response()->json(['message' => "Logo deleted"], Response::HTTP_OK);
-    //     } catch (\Throwable $th) {
-    //         return response()->json(['error' => 'Logo not found'], Response::HTTP_NOT_FOUND);
-    //     }
-    // }
 }

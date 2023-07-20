@@ -15,13 +15,11 @@ class Logo extends Model
     protected $fillable = [
         'urlImg',
         'publicId',
-        'name',
         'status'
     ];
     protected $casts = [
         'urlImg' => 'string',
         'publicId'=>'string',
-        'name' => 'string',
         'status' => 'boolean'
     ];
 }
