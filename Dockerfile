@@ -36,9 +36,8 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 # Instalar dependencias de Composer
 RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --ignore-platform-reqs --optimize-autoloader
 
-# Copiar el archivo de configuración de Nginx al directorio correcto
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
-
+# Copiar el archivo de configuración de Nginx
+COPY docker/nginx/default.conf /etc/nginx/sites-available/default
 
 # Exponer el puerto 80 del contenedor
 EXPOSE 80
