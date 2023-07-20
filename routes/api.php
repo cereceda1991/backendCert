@@ -34,6 +34,7 @@ Route::group(['prefix' => 'v1'], function () {
         // Rutas para certificados
         Route::resource('certificates', CertificateController::class)->except(['create', 'edit']);
         // Rutas para plantillas
+        
         Route::resource('templates', TemplateController::class)->except(['edit','create','destroy']);
         // Rutas para logos        
         Route::resource('logos', LogoController::class)->except(['edit','create','destroy']);
