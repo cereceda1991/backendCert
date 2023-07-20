@@ -1,15 +1,20 @@
-# Usar la imagen base de PHP 8.1 con FPM (FastCGI Process Manager)
-FROM php:8.1-fpm
+# Usar la imagen base de PHP 8.1
+FROM php:8.1
 
-# Instalar dependencias del sistema y extensiones de PHP requeridas por Laravel y Composer
+# Establecer el directorio de trabajo en /var/www
+WORKDIR /var/www
+
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    nginx \
+    build-essential \
     libssl-dev \
     libonig-dev \
     libzip-dev \
     zip \
-    unzip && \
-    docker-php-ext-install pdo_mysql mbstring zip
+    unzip
+
+# Instalar extensiones de PHP requeridas por Laravel y Composer
+RUN docker-php-ext-install pdo_mysql mbstring zip
 
 # Instalar extensión de OpenSSL para PHP
 RUN apt-get install -y openssl
@@ -36,12 +41,8 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 # Instalar dependencias de Composer
 RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --ignore-platform-reqs --optimize-autoloader
 
-# Copiar el archivo de configuración de Nginx
-COPY docker/nginx/default.conf /etc/nginx/sites-available/default
-
 # Exponer el puerto 80 del contenedor
 EXPOSE 80
 
-# Configurar ENTRYPOINT y CMD para ejecutar ambos servicios
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["php-fpm && nginx -g 'daemon off;'"]
+# Iniciar el servidor web de PHP
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
