@@ -42,7 +42,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 RUN composer install --no-interaction --no-scripts --no-plugins --prefer-dist --ignore-platform-reqs --optimize-autoloader
 
 # Exponer el puerto 80 del contenedor
-EXPOSE 80
+EXPOSE 3000
 
 # Iniciar el servidor web de PHP
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=80 & php artisan queue:work"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=$PORT & php artisan queue:work"]
